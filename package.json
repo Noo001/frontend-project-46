@@ -1,0 +1,27 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "[![Actions Status](https://github.com/Noo001/frontend-project-46/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Noo001/frontend-project-46/actions)",
+  "homepage": "https://github.com/Noo001/frontend-project-46#readme",
+  "bugs": {
+    "url": "https://github.com/Noo001/frontend-project-46/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Noo001/frontend-project-46.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "code": "bin/gendiff.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "commander": "^14.0.3"
+  },
+  "devDependencies": {}
+}
