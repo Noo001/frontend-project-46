@@ -1,0 +1,6 @@
+{
+  "string": "value2",
+  "number": 100,
+  "boolean": false,
+  "nullValue": null
+}
