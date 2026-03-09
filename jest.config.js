@@ -17,4 +17,6 @@ export default {
       statements: 80,
     },
   },
+  moduleFileExtensions: ['js', 'json'],
+  verbose: true,
 };

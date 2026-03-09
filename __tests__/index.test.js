@@ -1,5 +1,6 @@
 import { describe, it, expect } from '@jest/globals';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import genDiff from '../src/index.js';
 
@@ -45,8 +46,7 @@ describe('gendiff flat JSON comparison', () => {
     const emptyFile = getFixturePath('empty.json');
     const file1 = getFixturePath('file1.json');
 
-    // Создаем пустой файл для теста
-    const fs = require('fs');
+    // Создаем пустой файл для теста, если его нет
     if (!fs.existsSync(emptyFile)) {
       fs.writeFileSync(emptyFile, '{}');
     }
@@ -73,8 +73,11 @@ describe('gendiff flat JSON comparison', () => {
     // Проверяем порядок ключей (алфавитный)
     const keys = lines
       .filter(line => line.match(/[+-]?\s+\w+:/))
-      .map(line => line.match(/\w+(?=:)/)[0]);
+      .map(line => line.match(/\w+(?=:)/)[0])
+      .filter(Boolean);
 
-    expect(keys).toEqual(['follow', 'host', 'proxy', 'timeout', 'timeout', 'verbose']);
+    // Ожидаемый порядок ключей с учетом дублирования timeout
+    const expectedKeys = ['follow', 'host', 'proxy', 'timeout', 'timeout', 'verbose'];
+    expect(keys).toEqual(expectedKeys);
   });
 });

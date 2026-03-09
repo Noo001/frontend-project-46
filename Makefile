@@ -1,33 +1,50 @@
-.PHONY: help install link test test-coverage lint lint-fix ci
+.PHONY: help install link test test-coverage lint lint-fix ci clean
 
 NODE = node
-FIXTURES_DIR = __fixtures__
+SHELL := $(shell which powershell.exe 2>/dev/null || echo bash)
+
+# Определяем ОС
+ifeq ($(OS),Windows_NT)
+    RM = del /Q /F
+    RMDIR = rmdir /S /Q
+    NPM = npm.cmd
+    TEST_CMD = set NODE_OPTIONS=--experimental-vm-modules && npx jest
+else
+    RM = rm -f
+    RMDIR = rm -rf
+    NPM = npm
+    TEST_CMD = NODE_OPTIONS=--experimental-vm-modules npx jest
+endif
 
 help:				## Показать справку
 	$(NODE) bin/gendiff.js -h
 
 install:			## Установка зависимостей
-	npm ci
+	$(NPM) install
 
 link: install		## Создать глобальную ссылку
-	npm link
+	$(NPM) link
 
 test:				## Запустить тесты
-	npm test
+	$(TEST_CMD)
 
 test-coverage:		## Запустить тесты с покрытием
-	npm run test:coverage
+	$(TEST_CMD) --coverage
 
 test-watch:			## Запустить тесты в режиме watch
-	npm run test:watch
+	$(TEST_CMD) --watch
 
 lint:				## Запустить линтер
-	npm run lint
+	npx eslint .
 
 lint-fix:			## Исправить ошибки линтера
-	npm run lint:fix
+	npx eslint . --fix
 
 ci: lint test		## Запустить все проверки для CI
+
+clean:				## Очистить зависимости
+	$(RMDIR) node_modules
+	$(RM) package-lock.json
 
 start:				## Запуск с аргументами
 	$(NODE) bin/gendiff.js $(ARGS)
@@ -36,4 +53,8 @@ start:				## Запуск с аргументами
 list:
 	@echo "Доступные команды:"
 	@echo ""
+ifeq ($(OS),Windows_NT)
+	@for %%i in (help install link test test-coverage test-watch lint lint-fix ci clean start) do @echo   %%-i
+else
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+endif

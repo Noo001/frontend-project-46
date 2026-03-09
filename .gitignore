@@ -3,6 +3,7 @@ coverage/
 .DS_Store
 *.log
 .env
-.npmrc
-sonar-project.properties
+package-lock.json
 !/.npmrc
+dist/
+build/
