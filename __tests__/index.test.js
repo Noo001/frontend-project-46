@@ -193,3 +193,66 @@ describe('gendiff error handling', () => {
     }).toThrow(/Invalid .yml format/);
   });
 });
+
+describe('gendiff json format', () => {
+  it('should compare two nested JSON files in json format', () => {
+    const file1 = getFixturePath('file1-nested.json');
+    const file2 = getFixturePath('file2-nested.json');
+
+    const result = genDiff(file1, file2, 'json');
+
+    // Проверяем, что результат - валидный JSON
+    expect(() => JSON.parse(result)).not.toThrow();
+
+    const parsed = JSON.parse(result);
+
+    // Проверяем структуру JSON
+    expect(Array.isArray(parsed)).toBe(true);
+    expect(parsed.length).toBeGreaterThan(0);
+
+    // Проверяем наличие ключей
+    const rootKeys = parsed.map(item => item.key);
+    expect(rootKeys).toContain('common');
+    expect(rootKeys).toContain('group1');
+    expect(rootKeys).toContain('group2');
+    expect(rootKeys).toContain('group3');
+  });
+
+  it('should compare two flat JSON files in json format', () => {
+    const file1 = getFixturePath('file1.json');
+    const file2 = getFixturePath('file2.json');
+
+    const result = genDiff(file1, file2, 'json');
+
+    // Проверяем, что результат - валидный JSON
+    expect(() => JSON.parse(result)).not.toThrow();
+
+    const parsed = JSON.parse(result);
+
+    // Проверяем структуру JSON
+    expect(Array.isArray(parsed)).toBe(true);
+
+    // Проверяем типы узлов
+    const types = parsed.map(item => item.type);
+    expect(types).toContain('added');
+    expect(types).toContain('deleted');
+    expect(types).toContain('changed');
+    expect(types).toContain('unchanged');
+  });
+
+  it('should handle identical files in json format', () => {
+    const file1 = getFixturePath('file1.json');
+    const file1Copy = getFixturePath('file1.json');
+
+    const result = genDiff(file1, file1Copy, 'json');
+
+    // Проверяем, что результат - валидный JSON
+    expect(() => JSON.parse(result)).not.toThrow();
+
+    const parsed = JSON.parse(result);
+
+    // Все узлы должны быть типа 'unchanged'
+    const allUnchanged = parsed.every(item => item.type === 'unchanged');
+    expect(allUnchanged).toBe(true);
+  });
+});

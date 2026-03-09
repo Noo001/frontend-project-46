@@ -1,14 +1,16 @@
 import formatStylish from './stylish.js';
 import formatPlain from './plain.js';
+import formatJson from './json.js';
 
 const formatters = {
   stylish: formatStylish,
   plain: formatPlain,
+  json: formatJson,
 };
 
 /**
  * Возвращает функцию форматирования для указанного формата
- * @param {string} formatName - Название формата (stylish, plain)
+ * @param {string} formatName - Название формата (stylish, plain, json)
  * @returns {Function} Функция форматирования
  */
 export const getFormatter = (formatName) => {
