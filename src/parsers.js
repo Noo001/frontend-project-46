@@ -14,7 +14,6 @@ const __dirname = path.dirname(__filename);
 export const getFileFormat = (filepath) => {
   const ext = path.extname(filepath).toLowerCase().slice(1);
 
-  // Поддерживаемые форматы
   const supportedFormats = {
     json: 'json',
     yml: 'yaml',
@@ -35,21 +34,19 @@ export const getFileFormat = (filepath) => {
  * @returns {Object} Распарсенные данные
  */
 export const parseContent = (content, format) => {
-  // Проверка на пустой контент
   if (!content || content.trim() === '') {
     return {};
   }
 
   switch (format) {
-    case 'json':
-      return JSON.parse(content);
-    case 'yaml': {
-      const result = yaml.load(content);
-      // yaml.load может вернуть null для пустого документа
-      return result || {};
-    }
-    default:
-      throw new Error(`Unsupported format for parsing: ${format}`);
+  case 'json':
+    return JSON.parse(content);
+  case 'yaml': {
+    const result = yaml.load(content);
+    return result || {};
+  }
+  default:
+    throw new Error(`Unsupported format for parsing: ${format}`);
   }
 };
 
@@ -59,30 +56,25 @@ export const parseContent = (content, format) => {
  * @returns {string} Полный путь к существующему файлу
  */
 const resolveFilePath = (filepath) => {
-  // Если файл уже существует по указанному пути
   if (fs.existsSync(filepath)) {
     return path.resolve(filepath);
   }
 
-  // Проверяем относительно текущей рабочей директории
   const cwdPath = path.resolve(process.cwd(), filepath);
   if (fs.existsSync(cwdPath)) {
     return cwdPath;
   }
 
-  // Проверяем в папке __fixtures__ относительно текущей директории
   const fixturesPath = path.resolve(process.cwd(), '__fixtures__', path.basename(filepath));
   if (fs.existsSync(fixturesPath)) {
     return fixturesPath;
   }
 
-  // Проверяем в папке __fixtures__ относительно корня проекта
   const projectFixturesPath = path.resolve(__dirname, '..', '__fixtures__', path.basename(filepath));
   if (fs.existsSync(projectFixturesPath)) {
     return projectFixturesPath;
   }
 
-  // Возвращаем исходный путь - он вызовет ошибку при чтении
   return filepath;
 };
 

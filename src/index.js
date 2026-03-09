@@ -1,83 +1,23 @@
-import _ from 'lodash';
 import { readAndParseFile } from './parsers.js';
-
-/**
- * Форматирует значение для вывода
- * @param {*} value - Значение для форматирования
- * @returns {string} Отформатированное значение
- */
-const formatValue = (value) => {
-  if (typeof value === 'string') {
-    return value;
-  }
-  if (typeof value === 'boolean' || typeof value === 'number') {
-    return String(value);
-  }
-  if (value === null) {
-    return 'null';
-  }
-  return JSON.stringify(value);
-};
-
-/**
- * Строит строку различий между двумя объектами
- * @param {Object} data1 - Данные первого файла
- * @param {Object} data2 - Данные второго файла
- * @returns {string} Отформатированная строка с различиями
- */
-const buildDiffString = (data1, data2) => {
-  // Получаем все уникальные ключи и сортируем их
-  const allKeys = _.union(Object.keys(data1 || {}), Object.keys(data2 || {}));
-
-  // Если нет ключей, возвращаем пустой объект
-  if (allKeys.length === 0) {
-    return '{}';
-  }
-
-  const sortedKeys = _.sortBy(allKeys);
-
-  // Строим массив строк для вывода
-  const lines = ['{'];
-
-  sortedKeys.forEach((key) => {
-    const hasInFirst = data1 && Object.hasOwn(data1, key);
-    const hasInSecond = data2 && Object.hasOwn(data2, key);
-
-    if (hasInFirst && !hasInSecond) {
-      // Ключ только в первом файле (удален)
-      lines.push(`  - ${key}: ${formatValue(data1[key])}`);
-    } else if (!hasInFirst && hasInSecond) {
-      // Ключ только во втором файле (добавлен)
-      lines.push(`  + ${key}: ${formatValue(data2[key])}`);
-    } else if (hasInFirst && hasInSecond) {
-      // Ключ есть в обоих файлах
-      if (data1[key] === data2[key]) {
-        // Значения одинаковые
-        lines.push(`    ${key}: ${formatValue(data1[key])}`);
-      } else {
-        // Значения разные - выводим обе строки
-        lines.push(`  - ${key}: ${formatValue(data1[key])}`);
-        lines.push(`  + ${key}: ${formatValue(data2[key])}`);
-      }
-    }
-  });
-
-  lines.push('}');
-  return lines.join('\n');
-};
+import buildDiff from './buildDiff.js';
+import formatStylish from './formatters/stylish.js';
 
 /**
  * Сравнивает два конфигурационных файла и возвращает разницу
  * @param {string} filepath1 - Путь к первому файлу
  * @param {string} filepath2 - Путь ко второму файлу
+ * @param {string} _format - Формат вывода (stylish, plain, json) - пока не используется
  * @returns {string} Отформатированная строка с различиями
  */
-export default function genDiff(filepath1, filepath2) {
+export default function genDiff(filepath1, filepath2, _format = 'stylish') {
   try {
     const data1 = readAndParseFile(filepath1);
     const data2 = readAndParseFile(filepath2);
 
-    return buildDiffString(data1, data2);
+    const diff = buildDiff(data1, data2);
+
+    // Пока поддерживаем только stylish формат
+    return formatStylish(diff);
   } catch (error) {
     throw new Error(`Failed to process files: ${error.message}`);
   }
