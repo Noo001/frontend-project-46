@@ -76,26 +76,26 @@ const stylish = (diff, depth = 0) => {
     const { key, type } = node;
 
     switch (type) {
-      case 'nested':
-        return `${getIndent(depth, ' ')}${key}: {\n${stylish(node.children, depth + 1)}\n${getIndent(depth, ' ')}}`;
+    case 'nested':
+      return `${getIndent(depth, ' ')}${key}: {\n${stylish(node.children, depth + 1)}\n${getIndent(depth, ' ')}}`;
 
-      case 'added':
-        return `${getIndent(depth, '+')}${key}: ${formatObject(node.value, depth + 1)}`;
+    case 'added':
+      return `${getIndent(depth, '+')}${key}: ${formatObject(node.value, depth + 1)}`;
 
-      case 'deleted':
-        return `${getIndent(depth, '-')}${key}: ${formatObject(node.value, depth + 1)}`;
+    case 'deleted':
+      return `${getIndent(depth, '-')}${key}: ${formatObject(node.value, depth + 1)}`;
 
-      case 'changed':
-        return [
-          `${getIndent(depth, '-')}${key}: ${formatObject(node.value1, depth + 1)}`,
-          `${getIndent(depth, '+')}${key}: ${formatObject(node.value2, depth + 1)}`,
-        ].join('\n');
+    case 'changed':
+      return [
+        `${getIndent(depth, '-')}${key}: ${formatObject(node.value1, depth + 1)}`,
+        `${getIndent(depth, '+')}${key}: ${formatObject(node.value2, depth + 1)}`,
+      ].join('\n');
 
-      case 'unchanged':
-        return `${getIndent(depth, ' ')}${key}: ${formatObject(node.value, depth + 1)}`;
+    case 'unchanged':
+      return `${getIndent(depth, ' ')}${key}: ${formatObject(node.value, depth + 1)}`;
 
-      default:
-        return '';
+    default:
+      return '';
     }
   });
 
