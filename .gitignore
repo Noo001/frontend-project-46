@@ -3,7 +3,6 @@ coverage/
 .DS_Store
 *.log
 .env
-package-lock.json
 !/.npmrc
 dist/
 build/
