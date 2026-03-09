@@ -36,20 +36,7 @@ jobs:
         env:
           NODE_OPTIONS: --experimental-vm-modules
 
-      - name: Debug SonarCloud configuration
-        run: |
-          echo "=== SonarCloud Debug Info ==="
-          echo "Current directory: $(pwd)"
-          echo "Contents of sonar-project.properties:"
-          cat sonar-project.properties
-          echo ""
-          echo "Checking SonarCloud project..."
-          curl -s -H "Authorization: Bearer ${{ secrets.SONAR_TOKEN }}" \
-            "https://sonarcloud.io/api/projects/search?projects=Noo001_frontend-project-46" | jq .
-          echo ""
-          echo "=== End Debug ==="
-
-      - name: SonarCloud Scan with explicit parameters
+      - name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -61,4 +48,4 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
             -Dsonar.test.inclusions=__tests__/**/*.js \
             -Dsonar.exclusions=node_modules/**,coverage/**,__fixtures__/**,bin/** \
-            -Dsonar.verbose=true
+            -Dsonar.host.url=https://sonarcloud.io
