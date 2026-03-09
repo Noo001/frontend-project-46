@@ -1,2 +1,8 @@
-/.idea/
-/node_modules/
+node_modules/
+coverage/
+.DS_Store
+*.log
+.env
+.npmrc
+sonar-project.properties
+!/.npmrc
