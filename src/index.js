@@ -27,15 +27,21 @@ const formatValue = (value) => {
  */
 const buildDiffString = (data1, data2) => {
   // Получаем все уникальные ключи и сортируем их
-  const allKeys = _.union(Object.keys(data1), Object.keys(data2));
+  const allKeys = _.union(Object.keys(data1 || {}), Object.keys(data2 || {}));
+
+  // Если нет ключей, возвращаем пустой объект
+  if (allKeys.length === 0) {
+    return '{}';
+  }
+
   const sortedKeys = _.sortBy(allKeys);
 
   // Строим массив строк для вывода
   const lines = ['{'];
 
   sortedKeys.forEach((key) => {
-    const hasInFirst = Object.hasOwn(data1, key);
-    const hasInSecond = Object.hasOwn(data2, key);
+    const hasInFirst = data1 && Object.hasOwn(data1, key);
+    const hasInSecond = data2 && Object.hasOwn(data2, key);
 
     if (hasInFirst && !hasInSecond) {
       // Ключ только в первом файле (удален)

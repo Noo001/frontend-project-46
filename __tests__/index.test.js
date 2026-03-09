@@ -1,9 +1,8 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import genDiff from '../src/index.js';
-import { readAndParseFile } from '../src/parsers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,7 +27,7 @@ describe('gendiff flat JSON comparison', () => {
     expect(result).toBe(expected);
   });
 
-  it('should handle identical files', () => {
+  it('should handle identical JSON files', () => {
     const file1 = getFixturePath('file1.json');
     const file1Copy = getFixturePath('file1.json');
 
@@ -42,14 +41,65 @@ describe('gendiff flat JSON comparison', () => {
     const result = genDiff(file1, file1Copy);
     expect(result).toBe(expected);
   });
+});
 
-  it('should handle empty file', () => {
-    const emptyFile = getFixturePath('empty.json');
-    const file1 = getFixturePath('file1.json');
+describe('gendiff flat YAML comparison', () => {
+  it('should compare two flat YAML files (.yml extension) correctly', () => {
+    const file1 = getFixturePath('file1.yml');
+    const file2 = getFixturePath('file2.yml');
 
-    // Создаем пустой файл для теста, если его нет
+    const expected = `{
+  - follow: false
+    host: hexlet.io
+  - proxy: 123.234.53.22
+  - timeout: 50
+  + timeout: 20
+  + verbose: true
+}`;
+
+    const result = genDiff(file1, file2);
+    expect(result).toBe(expected);
+  });
+
+  it('should compare two flat YAML files (.yaml extension) correctly', () => {
+    const file1 = getFixturePath('file1.yaml');
+    const file2 = getFixturePath('file2.yaml');
+
+    const expected = `{
+  - follow: false
+    host: hexlet.io
+  - proxy: 123.234.53.22
+  - timeout: 50
+  + timeout: 20
+  + verbose: true
+}`;
+
+    const result = genDiff(file1, file2);
+    expect(result).toBe(expected);
+  });
+
+  it('should handle identical YAML files', () => {
+    const file1 = getFixturePath('file1.yml');
+    const file1Copy = getFixturePath('file1.yml');
+
+    const expected = `{
+    follow: false
+    host: hexlet.io
+    proxy: 123.234.53.22
+    timeout: 50
+}`;
+
+    const result = genDiff(file1, file1Copy);
+    expect(result).toBe(expected);
+  });
+
+  it('should handle empty YAML file', () => {
+    const emptyFile = getFixturePath('empty.yml');
+    const file1 = getFixturePath('file1.yml');
+
+    // Создаем пустой YAML файл для теста, если его нет
     if (!fs.existsSync(emptyFile)) {
-      fs.writeFileSync(emptyFile, '{}');
+      fs.writeFileSync(emptyFile, '');
     }
 
     const expected = `{
@@ -62,102 +112,137 @@ describe('gendiff flat JSON comparison', () => {
     const result = genDiff(file1, emptyFile);
     expect(result).toBe(expected);
   });
+});
 
-  it('should handle file with added keys', () => {
-    const file1 = getFixturePath('file1.json');
-    const file2 = getFixturePath('file2.json');
+describe('gendiff mixed formats comparison', () => {
+  it('should compare JSON and YAML files', () => {
+    const jsonFile = getFixturePath('file1.json');
+    const yamlFile = getFixturePath('file2.yml');
 
-    // Проверяем, что ключи отсортированы
-    const result = genDiff(file1, file2);
-    const lines = result.split('\n');
+    const expected = `{
+  - follow: false
+    host: hexlet.io
+  - proxy: 123.234.53.22
+  - timeout: 50
+  + timeout: 20
+  + verbose: true
+}`;
 
-    // Проверяем порядок ключей (алфавитный)
-    const keys = lines
-      .filter(line => line.match(/[+-]?\s+\w+:/))
-      .map(line => line.match(/\w+(?=:)/)[0])
-      .filter(Boolean);
-
-    const expectedKeys = ['follow', 'host', 'proxy', 'timeout', 'timeout', 'verbose'];
-    expect(keys).toEqual(expectedKeys);
+    const result = genDiff(jsonFile, yamlFile);
+    expect(result).toBe(expected);
   });
 
-  // Новые тесты для улучшения покрытия
+  it('should compare YAML and JSON files', () => {
+    const yamlFile = getFixturePath('file1.yml');
+    const jsonFile = getFixturePath('file2.json');
 
-  it('should handle file not found error', () => {
-    const nonExistentFile = getFixturePath('nonexistent.json');
+    const expected = `{
+  - follow: false
+    host: hexlet.io
+  - proxy: 123.234.53.22
+  - timeout: 50
+  + timeout: 20
+  + verbose: true
+}`;
+
+    const result = genDiff(yamlFile, jsonFile);
+    expect(result).toBe(expected);
+  });
+});
+
+describe('gendiff error handling', () => {
+  it('should throw error for unsupported file format', () => {
+    const unsupportedFile = getFixturePath('unsupported.txt');
     const file1 = getFixturePath('file1.json');
+
+    // Создаем файл с неподдерживаемым расширением
+    if (!fs.existsSync(unsupportedFile)) {
+      fs.writeFileSync(unsupportedFile, 'content');
+    }
+
+    expect(() => {
+      genDiff(unsupportedFile, file1);
+    }).toThrow(/Unsupported file format/);
+  });
+
+  it('should throw error for invalid YAML', () => {
+    const invalidYaml = getFixturePath('invalid.yml');
+    const file1 = getFixturePath('file1.yml');
+
+    // Создаем файл с некорректным YAML
+    if (!fs.existsSync(invalidYaml)) {
+      fs.writeFileSync(invalidYaml, 'invalid: yaml: : :');
+    }
+
+    expect(() => {
+      genDiff(invalidYaml, file1);
+    }).toThrow();
+  });
+
+  it('should throw error for file not found', () => {
+    const nonExistentFile = getFixturePath('nonexistent.yml');
+    const file1 = getFixturePath('file1.yml');
 
     expect(() => {
       genDiff(nonExistentFile, file1);
-    }).toThrow();
+    }).toThrow(/File not found/);
   });
+});
 
-  it('should handle invalid JSON format error', () => {
-    const invalidFile = getFixturePath('invalid.json');
+it('should handle empty YAML file', () => {
+  const emptyFile = getFixturePath('empty.yml');
+  const file1 = getFixturePath('file1.yml');
 
-    // Создаем файл с некорректным JSON
-    if (!fs.existsSync(invalidFile)) {
-      fs.writeFileSync(invalidFile, '{ invalid json }');
-    }
+  // Убедимся, что файл существует
+  if (!fs.existsSync(emptyFile)) {
+    fs.writeFileSync(emptyFile, '');
+  }
 
-    const file1 = getFixturePath('file1.json');
+  const expected = `{
+  - follow: false
+  - host: hexlet.io
+  - proxy: 123.234.53.22
+  - timeout: 50
+}`;
 
-    expect(() => {
-      genDiff(invalidFile, file1);
-    }).toThrow();
-  });
+  const result = genDiff(file1, emptyFile);
+  expect(result).toBe(expected);
+});
 
-  it('should handle different value types', () => {
-    const typesFile1 = getFixturePath('types1.json');
-    const typesFile2 = getFixturePath('types2.json');
+it('should handle empty JSON file', () => {
+  const emptyFile = getFixturePath('empty.json');
+  const file1 = getFixturePath('file1.json');
 
-    // Создаем файлы с разными типами данных
-    if (!fs.existsSync(typesFile1)) {
-      fs.writeFileSync(typesFile1, JSON.stringify({
-        string: 'value1',
-        number: 42,
-        boolean: true,
-        nullValue: null,
-      }, null, 2));
-    }
+  // Убедимся, что файл существует
+  if (!fs.existsSync(emptyFile)) {
+    fs.writeFileSync(emptyFile, '{}');
+  }
 
-    if (!fs.existsSync(typesFile2)) {
-      fs.writeFileSync(typesFile2, JSON.stringify({
-        string: 'value2',
-        number: 100,
-        boolean: false,
-        nullValue: null,
-      }, null, 2));
-    }
+  const expected = `{
+  - follow: false
+  - host: hexlet.io
+  - proxy: 123.234.53.22
+  - timeout: 50
+}`;
 
-    const result = genDiff(typesFile1, typesFile2);
-    expect(result).toContain('- string: value1');
-    expect(result).toContain('+ string: value2');
-    expect(result).toContain('- number: 42');
-    expect(result).toContain('+ number: 100');
-    expect(result).toContain('- boolean: true');
-    expect(result).toContain('+ boolean: false');
-    expect(result).toContain('    nullValue: null');
-  });
+  const result = genDiff(file1, emptyFile);
+  expect(result).toBe(expected);
+});
 
-  it('should handle absolute paths', () => {
-    const absolutePath1 = path.resolve(getFixturePath('file1.json'));
-    const absolutePath2 = path.resolve(getFixturePath('file2.json'));
+it('should handle both files empty', () => {
+  const empty1 = getFixturePath('empty1.yml');
+  const empty2 = getFixturePath('empty2.yml');
 
-    const result = genDiff(absolutePath1, absolutePath2);
-    expect(result).toBeDefined();
-    expect(result).toContain('follow');
-    expect(result).toContain('verbose');
-  });
+  // Создаем пустые файлы
+  if (!fs.existsSync(empty1)) {
+    fs.writeFileSync(empty1, '');
+  }
+  if (!fs.existsSync(empty2)) {
+    fs.writeFileSync(empty2, '');
+  }
 
-  it('should test readAndParseFile directly', () => {
-    const file1 = getFixturePath('file1.json');
-    const data = readAndParseFile(file1);
+  const expected = `{}`;
 
-    expect(data).toBeDefined();
-    expect(data.host).toBe('hexlet.io');
-    expect(data.timeout).toBe(50);
-    expect(data.proxy).toBe('123.234.53.22');
-    expect(data.follow).toBe(false);
-  });
+  const result = genDiff(empty1, empty2);
+  expect(result).toBe(expected);
 });

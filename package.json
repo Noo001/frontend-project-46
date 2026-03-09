@@ -14,7 +14,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
-  "keywords": ["cli", "diff", "comparison", "json"],
+  "keywords": [
+    "cli",
+    "diff",
+    "comparison",
+    "json"
+  ],
   "author": "Noo001",
   "license": "ISC",
   "repository": {
@@ -27,6 +32,7 @@
   "homepage": "https://github.com/Noo001/frontend-project-46#readme",
   "dependencies": {
     "commander": "^11.0.0",
+    "js-yaml": "^4.1.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
