@@ -34,19 +34,26 @@ export const getFileFormat = (filepath) => {
  * @returns {Object} Распарсенные данные
  */
 export const parseContent = (content, format) => {
+  // Сначала проверяем поддерживаемость формата
+  const supportedFormats = ['json', 'yaml'];
+  if (!supportedFormats.includes(format)) {
+    throw new Error(`Unsupported format for parsing: ${format}`);
+  }
+
+  // Затем проверяем пустой контент
   if (!content || content.trim() === '') {
     return {};
   }
 
   switch (format) {
-  case 'json':
-    return JSON.parse(content);
-  case 'yaml': {
-    const result = yaml.load(content);
-    return result || {};
-  }
-  default:
-    throw new Error(`Unsupported format for parsing: ${format}`);
+    case 'json':
+      return JSON.parse(content);
+    case 'yaml': {
+      const result = yaml.load(content);
+      return result || {};
+    }
+    default:
+      throw new Error(`Unsupported format for parsing: ${format}`);
   }
 };
 

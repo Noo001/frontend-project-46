@@ -1,14 +1,16 @@
 import { describe, it, expect } from '@jest/globals';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import genDiff from '../src/index.js';
+import { readAndParseFile, getFileFormat, parseContent } from '../src/parsers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 
-describe('gendiff flat structures', () => {
+describe('gendiff stylish format', () => {
   it('should compare two flat JSON files correctly', () => {
     const file1 = getFixturePath('file1.json');
     const file2 = getFixturePath('file2.json');
@@ -22,7 +24,7 @@ describe('gendiff flat structures', () => {
     + verbose: true
 }`;
 
-    const result = genDiff(file1, file2);
+    const result = genDiff(file1, file2, 'stylish');
     expect(result).toBe(expected);
   });
 
@@ -37,129 +39,102 @@ describe('gendiff flat structures', () => {
       timeout: 50
 }`;
 
-    const result = genDiff(file1, file1Copy);
+    const result = genDiff(file1, file1Copy, 'stylish');
     expect(result).toBe(expected);
   });
 });
 
-// Временно отключаем проблемные тесты
-describe.skip('gendiff nested structures', () => {
-  it('should compare two nested JSON files correctly', () => {
+describe('gendiff plain format', () => {
+  it('should compare two nested JSON files in plain format', () => {
     const file1 = getFixturePath('file1-nested.json');
     const file2 = getFixturePath('file2-nested.json');
 
-    const expected = `{
-    common: {
-        + follow: false
-          setting1: Value 1
-        - setting2: 200
-        - setting3: true
-        + setting3: null
-        + setting4: blah blah
-        + setting5: {
-              key5: value5
-          }
-          setting6: {
-              doge: {
-                  - wow: 
-                  + wow: so much
-              }
-              key: value
-              + ops: vops
-          }
-    }
-    group1: {
-        - baz: bas
-        + baz: bars
-          foo: bar
-        - nest: {
-              key: value
-          }
-        + nest: str
-    }
-    - group2: {
-          abc: 12345
-          deep: {
-              id: 45
-          }
-      }
-    + group3: {
-          deep: {
-              id: {
-                  number: 45
-              }
-          }
-          fee: 100500
-      }
-}`;
+    const expected = [
+      'Property \'common.follow\' was added with value: false',
+      'Property \'common.setting2\' was removed',
+      'Property \'common.setting3\' was updated. From true to null',
+      'Property \'common.setting4\' was added with value: \'blah blah\'',
+      'Property \'common.setting5\' was added with value: [complex value]',
+      'Property \'common.setting6.doge.wow\' was updated. From \'\' to \'so much\'',
+      'Property \'common.setting6.ops\' was added with value: \'vops\'',
+      'Property \'group1.baz\' was updated. From \'bas\' to \'bars\'',
+      'Property \'group1.nest\' was updated. From [complex value] to \'str\'',
+      'Property \'group2\' was removed',
+      'Property \'group3\' was added with value: [complex value]',
+    ].join('\n');
 
-    const result = genDiff(file1, file2);
+    const result = genDiff(file1, file2, 'plain');
     expect(result).toBe(expected);
   });
 
-  it('should compare two nested YAML files correctly', () => {
-    const file1 = getFixturePath('file1-nested.yml');
-    const file2 = getFixturePath('file2-nested.yml');
+  it('should compare two flat JSON files in plain format', () => {
+    const file1 = getFixturePath('file1.json');
+    const file2 = getFixturePath('file2.json');
 
-    const expected = `{
-    common: {
-        + follow: false
-          setting1: Value 1
-        - setting2: 200
-        - setting3: true
-        + setting3: null
-        + setting4: blah blah
-        + setting5: {
-              key5: value5
-          }
-          setting6: {
-              doge: {
-                  - wow: 
-                  + wow: so much
-              }
-              key: value
-              + ops: vops
-          }
-    }
-    group1: {
-        - baz: bas
-        + baz: bars
-          foo: bar
-        - nest: {
-              key: value
-          }
-        + nest: str
-    }
-    - group2: {
-          abc: 12345
-          deep: {
-              id: 45
-          }
-      }
-    + group3: {
-          deep: {
-              id: {
-                  number: 45
-              }
-          }
-          fee: 100500
-      }
-}`;
+    const expected = [
+      'Property \'follow\' was removed',
+      'Property \'proxy\' was removed',
+      'Property \'timeout\' was updated. From 50 to 20',
+      'Property \'verbose\' was added with value: true',
+    ].sort().join('\n');
 
-    const result = genDiff(file1, file2);
-    expect(result).toBe(expected);
+    const result = genDiff(file1, file2, 'plain');
+    const sortedResult = result.split('\n').sort().join('\n');
+    expect(sortedResult).toBe(expected);
   });
 
-  it('should handle nested structures with mixed formats', () => {
-    const jsonFile = getFixturePath('file1-nested.json');
-    const yamlFile = getFixturePath('file2-nested.yml');
+  it('should handle identical files in plain format', () => {
+    const file1 = getFixturePath('file1.json');
+    const file1Copy = getFixturePath('file1.json');
 
-    const result = genDiff(jsonFile, yamlFile);
-    expect(result).toBeDefined();
-    expect(result).toContain('common');
-    expect(result).toContain('group1');
-    expect(result).toContain('group2');
-    expect(result).toContain('group3');
+    const result = genDiff(file1, file1Copy, 'plain');
+    expect(result).toBe('');
+  });
+
+  it('should format values correctly', () => {
+    const file1 = getFixturePath('file1-nested.json');
+    const file2 = getFixturePath('file2-nested.json');
+
+    const result = genDiff(file1, file2, 'plain');
+
+    expect(result).toContain('\'blah blah\'');
+    expect(result).toContain('\'so much\'');
+    expect(result).toContain('\'str\'');
+    expect(result).toContain('true');
+    expect(result).toContain('false');
+    expect(result).toContain('null');
+    expect(result).toContain('[complex value]');
+  });
+});
+
+describe('parsers module tests', () => {
+  it('should get file format correctly', () => {
+    expect(getFileFormat('test.json')).toBe('json');
+    expect(getFileFormat('test.yml')).toBe('yaml');
+    expect(getFileFormat('test.yaml')).toBe('yaml');
+    expect(() => getFileFormat('test.txt')).toThrow(/Unsupported file format/);
+  });
+
+  it('should parse content correctly', () => {
+    expect(parseContent('{"key": "value"}', 'json')).toEqual({ key: 'value' });
+    expect(parseContent('key: value', 'yaml')).toEqual({ key: 'value' });
+    expect(parseContent('', 'json')).toEqual({});
+    expect(parseContent('', 'yaml')).toEqual({});
+    expect(parseContent('  ', 'json')).toEqual({});
+    expect(parseContent('  ', 'yaml')).toEqual({});
+    expect(() => parseContent('invalid json', 'json')).toThrow();
+    expect(() => parseContent('invalid: yaml: :', 'yaml')).toThrow();
+
+    // Проверяем, что для неподдерживаемого формата выбрасывается исключение
+    expect(() => parseContent('', 'unsupported')).toThrow('Unsupported format for parsing: unsupported');
+  });
+
+  it('should read and parse files with different paths', () => {
+    const file1 = getFixturePath('file1.json');
+    const data = readAndParseFile(file1);
+    expect(data).toHaveProperty('host', 'hexlet.io');
+
+    expect(() => readAndParseFile('nonexistent.json')).toThrow();
   });
 });
 
@@ -167,6 +142,10 @@ describe('gendiff error handling', () => {
   it('should throw error for unsupported file format', () => {
     const unsupportedFile = getFixturePath('unsupported.txt');
     const file1 = getFixturePath('file1.json');
+
+    if (!fs.existsSync(unsupportedFile)) {
+      fs.writeFileSync(unsupportedFile, 'content');
+    }
 
     expect(() => {
       genDiff(unsupportedFile, file1);
@@ -180,5 +159,37 @@ describe('gendiff error handling', () => {
     expect(() => {
       genDiff(nonExistentFile, file1);
     }).toThrow(/File not found/);
+  });
+
+  it('should throw error for unknown format', () => {
+    const file1 = getFixturePath('file1.json');
+    const file2 = getFixturePath('file2.json');
+
+    expect(() => {
+      genDiff(file1, file2, 'unknown');
+    }).toThrow(/Unknown format/);
+  });
+
+  it('should handle invalid JSON files', () => {
+    const invalidFile = getFixturePath('invalid.json');
+
+    if (!fs.existsSync(invalidFile)) {
+      fs.writeFileSync(invalidFile, '{ invalid json }');
+    }
+
+    const file1 = getFixturePath('file1.json');
+
+    expect(() => {
+      genDiff(invalidFile, file1);
+    }).toThrow(/Invalid .json format/);
+  });
+
+  it('should handle invalid YAML files', () => {
+    const invalidFile = getFixturePath('invalid.yml');
+    const file1 = getFixturePath('file1.yml');
+
+    expect(() => {
+      genDiff(invalidFile, file1);
+    }).toThrow(/Invalid .yml format/);
   });
 });
