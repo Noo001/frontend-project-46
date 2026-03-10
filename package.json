@@ -1,5 +1,5 @@
 {
-  "name": "gendiff",
+  "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "CLI utility for comparing configuration files",
   "main": "src/index.js",
