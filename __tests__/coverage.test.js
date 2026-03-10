@@ -6,7 +6,7 @@ import genDiff from '../src/index.js';
 import buildDiff from '../src/buildDiff.js';
 import formatStylish from '../src/formatters/stylish.js';
 import formatPlain from '../src/formatters/plain.js';
-import { readAndParseFile, getFileFormat, parseContent } from '../src/parsers.js';
+import { readAndParseFile } from '../src/parsers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
