@@ -6,11 +6,6 @@ import yaml from 'js-yaml'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-/**
- * Определяет формат файла по расширению
- * @param {string} filepath - Путь к файлу
- * @returns {string} Формат файла (json, yml, yaml)
- */
 export const getFileFormat = (filepath) => {
   const ext = path.extname(filepath).toLowerCase().slice(1)
 
@@ -27,12 +22,6 @@ export const getFileFormat = (filepath) => {
   return supportedFormats[ext]
 }
 
-/**
- * Парсит содержимое файла в зависимости от формата
- * @param {string} content - Содержимое файла
- * @param {string} format - Формат файла (json или yaml)
- * @returns {Object} Распарсенные данные
- */
 export const parseContent = (content, format) => {
   const supportedFormats = ['json', 'yaml']
   if (!supportedFormats.includes(format)) {
@@ -55,11 +44,6 @@ export const parseContent = (content, format) => {
   }
 }
 
-/**
- * Находит полный путь к файлу, проверяя несколько возможных расположений
- * @param {string} filepath - Исходный путь к файлу
- * @returns {string} Полный путь к существующему файлу
- */
 const resolveFilePath = (filepath) => {
   if (fs.existsSync(filepath)) {
     return path.resolve(filepath)
@@ -83,11 +67,6 @@ const resolveFilePath = (filepath) => {
   return filepath
 }
 
-/**
- * Читает и парсит файл (JSON или YAML)
- * @param {string} filepath - Путь к файлу
- * @returns {Object} Распарсенные данные
- */
 export const readAndParseFile = (filepath) => {
   try {
     const resolvedPath = resolveFilePath(filepath)

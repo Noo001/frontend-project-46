@@ -29,7 +29,7 @@ const buildPath = (path) => path.join('.')
  * @param {Array} path - Текущий путь к свойству
  * @returns {Array} Массив строк с описанием изменений
  */
-const plain = (diff, path = []) => {
+const plain = ( diff, path = [] ) => {
   return diff.flatMap((node) => {
     const { key, type } = node
     const currentPath = [...path, key]

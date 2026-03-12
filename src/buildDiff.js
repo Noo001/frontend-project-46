@@ -5,7 +5,7 @@ import _ from 'lodash'
  * @param {*} value - Проверяемое значение
  * @returns {boolean} true, если значение - объект
  */
-const isObject = (value) => value && typeof value === 'object' && !Array.isArray(value)
+const isObject = ( value ) => value && typeof value === 'object' && !Array.isArray(value)
 
 /**
  * Строит внутреннее представление различий между двумя объектами
