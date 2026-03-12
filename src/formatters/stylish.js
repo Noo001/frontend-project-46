@@ -72,6 +72,7 @@ const getIndent = (depth, symbol = ' ') => {
  * @returns {string} Отформатированная строка
  */
 const stylish = (diff, depth = 0) => {
+  console.log(diff);
   const lines = diff.map((node) => {
     const { key, type } = node;
 
