@@ -13,8 +13,8 @@ const __dirname = path.dirname(__filename)
 
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename)
 
-describe('Coverage tests for stylish.js', ( ) => {
-  it('should format different value types correctly', ( ) => {
+describe('Coverage tests for stylish.js', () => {
+  it('should format different value types correctly', () => {
     const diff = [
       { key: 'string', type: 'added', value: 'test' },
       { key: 'number', type: 'added', value: 42 },
@@ -34,7 +34,7 @@ describe('Coverage tests for stylish.js', ( ) => {
     expect(result).toContain('1,2,3')
   })
 
-  it('should handle different node types', ( ) => {
+  it('should handle different node types', () => {
     const diff = [
       { key: 'nested', type: 'nested', children: [] },
       { key: 'added', type: 'added', value: 'value' },
@@ -52,7 +52,7 @@ describe('Coverage tests for stylish.js', ( ) => {
     expect(result).toContain('unchanged')
   })
 
-  it('should handle empty objects', ( ) => {
+  it('should handle empty objects', () => {
     const diff = [
       { key: 'empty', type: 'nested', children: [] },
     ]
@@ -62,7 +62,7 @@ describe('Coverage tests for stylish.js', ( ) => {
     expect(result).toContain('}')
   })
 
-  it('should handle deep nesting', ( ) => {
+  it('should handle deep nesting', () => {
     const diff = [
       {
         key: 'level1',
@@ -90,10 +90,10 @@ describe('Coverage tests for stylish.js', ( ) => {
   })
 })
 
-describe('Coverage tests for parsers.js', ( ) => {
+describe('Coverage tests for parsers.js', () => {
   const tempFiles = []
 
-  beforeEach(( ) => {
+  beforeEach(() => {
     const validJson = getFixturePath('temp-valid.json')
     const invalidJson = getFixturePath('temp-invalid.json')
     const validYaml = getFixturePath('temp-valid.yml')
@@ -109,7 +109,7 @@ describe('Coverage tests for parsers.js', ( ) => {
     tempFiles.push(validJson, invalidJson, validYaml, invalidYaml, emptyFile)
   })
 
-  afterEach(( ) => {
+  afterEach(() => {
     tempFiles.forEach((file) => {
       if (fs.existsSync(file)) {
         fs.unlinkSync(file)
@@ -117,29 +117,29 @@ describe('Coverage tests for parsers.js', ( ) => {
     })
   })
 
-  it('should handle file not found error', ( ) => {
-    expect(( ) => readAndParseFile('nonexistent-file.json')).toThrow(/File not found/)
+  it('should handle file not found error', () => {
+    expect(() => readAndParseFile('nonexistent-file.json')).toThrow(/File not found/)
   })
 
-  it('should handle invalid JSON format error', ( ) => {
+  it('should handle invalid JSON format error', () => {
     const invalidFile = getFixturePath('temp-invalid.json')
-    expect(( ) => readAndParseFile(invalidFile)).toThrow(/Invalid .json format/)
+    expect(() => readAndParseFile(invalidFile)).toThrow(/Invalid .json format/)
   })
 
-  it('should handle invalid YAML format error', ( ) => {
+  it('should handle invalid YAML format error', () => {
     const invalidFile = getFixturePath('temp-invalid.yml')
-    expect(( ) => readAndParseFile(invalidFile)).toThrow(/Invalid .yml format/)
+    expect(() => readAndParseFile(invalidFile)).toThrow(/Invalid .yml format/)
   })
 
-  it('should handle empty files', ( ) => {
+  it('should handle empty files', () => {
     const emptyFile = getFixturePath('temp-empty.json')
     const data = readAndParseFile(emptyFile)
     expect(data).toEqual({})
   })
 })
 
-describe('Coverage tests for buildDiff.js', ( ) => {
-  it('should handle line 74 - special case', ( ) => {
+describe('Coverage tests for buildDiff.js', () => {
+  it('should handle line 74 - special case', () => {
     const obj1 = { key: null }
     const obj2 = { key: undefined }
 
@@ -151,7 +151,7 @@ describe('Coverage tests for buildDiff.js', ( ) => {
     expect(changedNode.value2).toBeUndefined()
   })
 
-  it('should handle objects with different value types', ( ) => {
+  it('should handle objects with different value types', () => {
     const obj1 = { key: 'string' }
     const obj2 = { key: 42 }
 
@@ -164,18 +164,18 @@ describe('Coverage tests for buildDiff.js', ( ) => {
   })
 })
 
-describe('Coverage tests for plain.js', ( ) => {
-  it('should handle line 57 - default case in switch', ( ) => {
+describe('Coverage tests for plain.js', () => {
+  it('should handle line 57 - default case in switch', () => {
     const diff = [
       { key: 'unknown', type: 'unknown' },
     ]
 
-    expect(( ) => formatPlain(diff)).not.toThrow()
+    expect(() => formatPlain(diff)).not.toThrow()
   })
 })
 
-describe('Integration tests for all formatters', ( ) => {
-  it('should handle all formatters with same data', ( ) => {
+describe('Integration tests for all formatters', () => {
+  it('should handle all formatters with same data', () => {
     const file1 = getFixturePath('file1-nested.json')
     const file2 = getFixturePath('file2-nested.json')
 
@@ -186,10 +186,10 @@ describe('Integration tests for all formatters', ( ) => {
     expect(stylishResult).toBeDefined()
     expect(plainResult).toBeDefined()
     expect(jsonResult).toBeDefined()
-    expect(( ) => JSON.parse(jsonResult)).not.toThrow()
+    expect(() => JSON.parse(jsonResult)).not.toThrow()
   })
 
-  it('should handle empty diff in all formatters', ( ) => {
+  it('should handle empty diff in all formatters', () => {
     const file1 = getFixturePath('file1.json')
     const file1Copy = getFixturePath('file1.json')
 
@@ -199,6 +199,6 @@ describe('Integration tests for all formatters', ( ) => {
 
     expect(stylishResult).toBeDefined()
     expect(plainResult).toBe('')
-    expect(( ) => JSON.parse(jsonResult)).not.toThrow()
+    expect(() => JSON.parse(jsonResult)).not.toThrow()
   })
 })
