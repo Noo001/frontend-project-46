@@ -1,78 +1,44 @@
 import _ from 'lodash';
 
-/**
- * Форматирует значение для вывода
- * @param {*} value - Значение для форматирования
- * @returns {string} Отформатированное значение
- */
 const formatValue = (value) => {
-  if (value === null) {
-    return 'null';
-  }
-  if (typeof value === 'string') {
-    return value;
-  }
-  if (typeof value === 'boolean' || typeof value === 'number') {
-    return String(value);
-  }
-  if (typeof value === 'object' && !Array.isArray(value)) {
-    return '[complex value]';
-  }
+  if (value === null) return 'null';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'boolean' || typeof value === 'number') return String(value);
+  if (typeof value === 'object' && !Array.isArray(value)) return '[complex value]';
   return JSON.stringify(value);
 };
 
 /**
- * Форматирует объект с отступами
- * @param {Object} obj - Объект для форматирования
- * @param {number} depth - Текущая глубина
- * @returns {string} Отформатированная строка
+ * Проверяет, является ли значение объектом (не null и не массив)
  */
-const formatObject = (obj, depth = 1) => {
-  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
-    return formatValue(obj);
-  }
-
-  const indent = '    '.repeat(depth);
-  const bracketIndent = '    '.repeat(depth - 1);
-  const entries = Object.entries(obj).map(([key, value]) =>
-    `${indent}${key}: ${formatObject(value, depth + 1)}`);
-
-  return `{\n${entries.join('\n')}\n${bracketIndent}}`;
+const isObject = (value) => {
+  return value && typeof value === 'object' && !Array.isArray(value);
 };
 
 /**
  * Генерирует отступ для текущей глубины
- * @param {number} depth - Глубина вложенности
- * @param {string} symbol - Символ для отступа (+/-/пробел)
- * @returns {string} Отформатированный отступ
  */
 const getIndent = (depth, symbol = ' ') => {
   const indentSize = 4;
 
   if (depth === 0) {
-    if (symbol !== ' ') {
-      return ' '.repeat(4) + `${symbol} `;
+    if (symbol === ' ') {
+      return '    '; // 4 пробела для обычных ключей
     }
-    return ' '.repeat(6);
+    return '  ' + symbol + ' '; // 2 пробела + символ + пробел
   }
 
   const baseIndent = depth * indentSize;
-
-  if (symbol !== ' ') {
-    return ' '.repeat(baseIndent + 4) + `${symbol} `;
+  if (symbol === ' ') {
+    return ' '.repeat(baseIndent + 4);
   }
-
-  return ' '.repeat(baseIndent + 6);
+  return ' '.repeat(baseIndent + 2) + symbol + ' ';
 };
 
 /**
  * Форматирует AST в стиле stylish
- * @param {Array} diff - Внутреннее представление различий
- * @param {number} depth - Текущая глубина
- * @returns {string} Отформатированная строка
  */
 const stylish = (diff, depth = 0) => {
-  console.log(diff);
   const lines = diff.map((node) => {
     const { key, type } = node;
 
@@ -80,20 +46,71 @@ const stylish = (diff, depth = 0) => {
     case 'nested':
       return `${getIndent(depth, ' ')}${key}: {\n${stylish(node.children, depth + 1)}\n${getIndent(depth, ' ')}}`;
 
-    case 'added':
-      return `${getIndent(depth, '+')}${key}: ${formatObject(node.value, depth + 1)}`;
+    case 'added': {
+      if (isObject(node.value)) {
+        const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
+          key: k,
+          type: 'added',
+          value: v
+        }));
+        return `${getIndent(depth, '+')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`;
+      }
+      return `${getIndent(depth, '+')}${key}: ${formatValue(node.value)}`;
+    }
 
-    case 'deleted':
-      return `${getIndent(depth, '-')}${key}: ${formatObject(node.value, depth + 1)}`;
+    case 'deleted': {
+      if (isObject(node.value)) {
+        const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
+          key: k,
+          type: 'deleted',
+          value: v
+        }));
+        return `${getIndent(depth, '-')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`;
+      }
+      return `${getIndent(depth, '-')}${key}: ${formatValue(node.value)}`;
+    }
 
-    case 'changed':
-      return [
-        `${getIndent(depth, '-')}${key}: ${formatObject(node.value1, depth + 1)}`,
-        `${getIndent(depth, '+')}${key}: ${formatObject(node.value2, depth + 1)}`,
-      ].join('\n');
+    case 'changed': {
+      const lines = [];
 
-    case 'unchanged':
-      return `${getIndent(depth, ' ')}${key}: ${formatObject(node.value, depth + 1)}`;
+      // Старое значение
+      if (isObject(node.value1)) {
+        const nestedDiff = Object.entries(node.value1).map(([k, v]) => ({
+          key: k,
+          type: 'deleted',
+          value: v
+        }));
+        lines.push(`${getIndent(depth, '-')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`);
+      } else {
+        lines.push(`${getIndent(depth, '-')}${key}: ${formatValue(node.value1)}`);
+      }
+
+      // Новое значение
+      if (isObject(node.value2)) {
+        const nestedDiff = Object.entries(node.value2).map(([k, v]) => ({
+          key: k,
+          type: 'added',
+          value: v
+        }));
+        lines.push(`${getIndent(depth, '+')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`);
+      } else {
+        lines.push(`${getIndent(depth, '+')}${key}: ${formatValue(node.value2)}`);
+      }
+
+      return lines.join('\n');
+    }
+
+    case 'unchanged': {
+      if (isObject(node.value)) {
+        const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
+          key: k,
+          type: 'unchanged',
+          value: v
+        }));
+        return `${getIndent(depth, ' ')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`;
+      }
+      return `${getIndent(depth, ' ')}${key}: ${formatValue(node.value)}`;
+    }
 
     default:
       return '';
@@ -103,15 +120,8 @@ const stylish = (diff, depth = 0) => {
   return lines.join('\n');
 };
 
-/**
- * Форматирует AST в стиле stylish (основная функция)
- * @param {Array} diff - Внутреннее представление различий
- * @returns {string} Отформатированная строка
- */
 const formatStylish = (diff) => {
-  if (diff.length === 0) {
-    return '{}';
-  }
+  if (diff.length === 0) return '{}';
   return `{\n${stylish(diff, 0)}\n}`;
 };
 
