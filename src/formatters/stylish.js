@@ -1,4 +1,6 @@
-const formatValue = ( value ) => {
+import _ from 'lodash'
+
+const formatValue = (value) => {
   if (value === null) return 'null'
   if (typeof value === 'string') return value
   if (typeof value === 'boolean' || typeof value === 'number') return String(value)
@@ -32,7 +34,6 @@ const stylish = (diff, depth = 0) => {
     switch (type) {
       case 'nested':
         return `${getIndent(depth, ' ')}${key}: {\n${stylish(node.children, depth + 1)}\n${getIndent(depth, ' ')}}`
-
       case 'added': {
         if (isObject(node.value)) {
           const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
@@ -44,7 +45,6 @@ const stylish = (diff, depth = 0) => {
         }
         return `${getIndent(depth, '+')}${key}: ${formatValue(node.value)}`
       }
-
       case 'deleted': {
         if (isObject(node.value)) {
           const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
@@ -56,7 +56,6 @@ const stylish = (diff, depth = 0) => {
         }
         return `${getIndent(depth, '-')}${key}: ${formatValue(node.value)}`
       }
-
       case 'changed': {
         const changedLines = []
 
@@ -84,7 +83,6 @@ const stylish = (diff, depth = 0) => {
 
         return changedLines.join('\n')
       }
-
       case 'unchanged': {
         if (isObject(node.value)) {
           const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
@@ -96,7 +94,6 @@ const stylish = (diff, depth = 0) => {
         }
         return `${getIndent(depth, ' ')}${key}: ${formatValue(node.value)}`
       }
-
       default:
         return ''
     }

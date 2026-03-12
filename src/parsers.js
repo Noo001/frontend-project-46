@@ -35,10 +35,10 @@ export const parseContent = (content, format) => {
   switch (format) {
     case 'json':
       return JSON.parse(content)
-    case 'yaml':
-    // eslint-disable-next-line no-case-declarations
+    case 'yaml': {
       const result = yaml.load(content)
       return result || {}
+    }
     default:
       throw new Error(`Unsupported format for parsing: ${format}`)
   }
@@ -83,10 +83,4 @@ export const readAndParseFile = (filepath) => {
     }
     throw error
   }
-}
-
-export default {
-  readAndParseFile,
-  getFileFormat,
-  parseContent,
 }

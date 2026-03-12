@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { readAndParseFile } from './parsers.js'
+import { readAndParseFile } from './src/parsers.js'
 
 const formatValue = (value) => {
   if (typeof value === 'string') {
