@@ -24,9 +24,9 @@ const getIndent = (depth, symbol = ' ') => {
 
   const baseIndent = depth * indentSize;
   if (symbol === ' ') {
-    return ' '.repeat(baseIndent + 2); 
+    return ' '.repeat(baseIndent + 4); // было +2, надо +4
   }
-  return ' '.repeat(baseIndent) + symbol + ' ';
+  return ' '.repeat(baseIndent + 2) + symbol + ' '; // было 0, надо +2
 };
 
 const stylish = (diff, depth = 0) => {
