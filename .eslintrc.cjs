@@ -9,6 +9,7 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
+  plugins: ['import'],
   settings: {
     'import/resolver': {
       node: {
@@ -18,20 +19,34 @@ module.exports = {
     },
   },
   rules: {
-    'no-console': 'off',
+    'import/no-unresolved': 'off',
+    'import/no-extraneous-dependencies': ['error', {
+      devDependencies: [
+        '**/__tests__/**/*.js',
+        '**/*.test.js',
+        '**/jest.config.js',
+        '**/debug-test.js',
+        '**/bin/**/*.js',
+      ],
+    }],
+    'semi': ['error', 'never'],
+    'quotes': ['error', 'single'],
+    'indent': ['error', 2, {
+      SwitchCase: 1,
+    }],
+    'comma-dangle': ['error', 'always-multiline'],
+    'object-curly-spacing': ['error', 'always'],
+    'array-bracket-spacing': ['error', 'never'],
     'no-unused-vars': ['error', {
       argsIgnorePattern: '^_',
       varsIgnorePattern: '^_'
     }],
-    'semi': ['error', 'never'], // было 'always', стало 'never'
-    'quotes': ['error', 'single'],
-    'indent': ['error', 2],
-    'comma-dangle': ['error', 'always-multiline'],
-    'object-curly-spacing': ['error', 'always'],
-    'array-bracket-spacing': ['error', 'never'],
+    'no-console': 'off',
     'no-var': 'error',
     'prefer-const': 'error',
     'eqeqeq': ['error', 'always'],
-    'import/no-unresolved': 'off',
+    'arrow-parens': ['error', 'always'],
+    'brace-style': ['error', '1tbs', { allowSingleLine: true }],
+    'eol-last': ['error', 'always'],
   },
 }

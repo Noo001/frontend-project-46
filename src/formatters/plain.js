@@ -38,23 +38,23 @@ const plain = (diff, path = []) => {
     const propertyPath = buildPath(currentPath)
 
     switch (type) {
-    case 'nested':
-      return plain(node.children, currentPath)
+      case 'nested':
+        return plain(node.children, currentPath)
 
-    case 'added':
-      return `Property '${propertyPath}' was added with value: ${formatValue(node.value)}`
+      case 'added':
+        return `Property '${propertyPath}' was added with value: ${formatValue(node.value)}`
 
-    case 'deleted':
-      return `Property '${propertyPath}' was removed`
+      case 'deleted':
+        return `Property '${propertyPath}' was removed`
 
-    case 'changed':
-      return `Property '${propertyPath}' was updated. From ${formatValue(node.value1)} to ${formatValue(node.value2)}`
+      case 'changed':
+        return `Property '${propertyPath}' was updated. From ${formatValue(node.value1)} to ${formatValue(node.value2)}`
 
-    case 'unchanged':
-      return []
+      case 'unchanged':
+        return []
 
-    default:
-      return []
+      default:
+        return []
     }
   })
 

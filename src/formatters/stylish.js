@@ -32,75 +32,75 @@ const stylish = (diff, depth = 0) => {
     const { key, type } = node
 
     switch (type) {
-    case 'nested':
-      return `${getIndent(depth, ' ')}${key}: {\n${stylish(node.children, depth + 1)}\n${getIndent(depth, ' ')}}`
+      case 'nested':
+        return `${getIndent(depth, ' ')}${key}: {\n${stylish(node.children, depth + 1)}\n${getIndent(depth, ' ')}}`
 
-    case 'added': {
-      if (isObject(node.value)) {
-        const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
-          key: k,
-          type: 'unchanged',
-          value: v,
-        }))
-        return `${getIndent(depth, '+')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`
-      }
-      return `${getIndent(depth, '+')}${key}: ${formatValue(node.value)}`
-    }
-
-    case 'deleted': {
-      if (isObject(node.value)) {
-        const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
-          key: k,
-          type: 'unchanged',
-          value: v,
-        }))
-        return `${getIndent(depth, '-')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`
-      }
-      return `${getIndent(depth, '-')}${key}: ${formatValue(node.value)}`
-    }
-
-    case 'changed': {
-      const changedLines = []
-
-      if (isObject(node.value1)) {
-        const nestedDiff = Object.entries(node.value1).map(([k, v]) => ({
-          key: k,
-          type: 'unchanged',
-          value: v,
-        }))
-        changedLines.push(`${getIndent(depth, '-')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`)
-      } else {
-        changedLines.push(`${getIndent(depth, '-')}${key}: ${formatValue(node.value1)}`)
+      case 'added': {
+        if (isObject(node.value)) {
+          const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
+            key: k,
+            type: 'unchanged',
+            value: v,
+          }))
+          return `${getIndent(depth, '+')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`
+        }
+        return `${getIndent(depth, '+')}${key}: ${formatValue(node.value)}`
       }
 
-      if (isObject(node.value2)) {
-        const nestedDiff = Object.entries(node.value2).map(([k, v]) => ({
-          key: k,
-          type: 'unchanged',
-          value: v,
-        }))
-        changedLines.push(`${getIndent(depth, '+')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`)
-      } else {
-        changedLines.push(`${getIndent(depth, '+')}${key}: ${formatValue(node.value2)}`)
+      case 'deleted': {
+        if (isObject(node.value)) {
+          const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
+            key: k,
+            type: 'unchanged',
+            value: v,
+          }))
+          return `${getIndent(depth, '-')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`
+        }
+        return `${getIndent(depth, '-')}${key}: ${formatValue(node.value)}`
       }
 
-      return changedLines.join('\n')
-    }
+      case 'changed': {
+        const changedLines = []
 
-    case 'unchanged': {
-      if (isObject(node.value)) {
-        const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
-          key: k,
-          type: 'unchanged',
-          value: v,
-        }))
-        return `${getIndent(depth, ' ')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`
+        if (isObject(node.value1)) {
+          const nestedDiff = Object.entries(node.value1).map(([k, v]) => ({
+            key: k,
+            type: 'unchanged',
+            value: v,
+          }))
+          changedLines.push(`${getIndent(depth, '-')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`)
+        } else {
+          changedLines.push(`${getIndent(depth, '-')}${key}: ${formatValue(node.value1)}`)
+        }
+
+        if (isObject(node.value2)) {
+          const nestedDiff = Object.entries(node.value2).map(([k, v]) => ({
+            key: k,
+            type: 'unchanged',
+            value: v,
+          }))
+          changedLines.push(`${getIndent(depth, '+')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`)
+        } else {
+          changedLines.push(`${getIndent(depth, '+')}${key}: ${formatValue(node.value2)}`)
+        }
+
+        return changedLines.join('\n')
       }
-      return `${getIndent(depth, ' ')}${key}: ${formatValue(node.value)}`
-    }
 
-    default:
-      return ''
+      case 'unchanged': {
+        if (isObject(node.value)) {
+          const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
+            key: k,
+            type: 'unchanged',
+            value: v,
+          }))
+          return `${getIndent(depth, ' ')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`
+        }
+        return `${getIndent(depth, ' ')}${key}: ${formatValue(node.value)}`
+      }
+
+      default:
+        return ''
     }
   })
 

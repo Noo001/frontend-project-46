@@ -44,14 +44,14 @@ export const parseContent = (content, format) => {
   }
 
   switch (format) {
-  case 'json':
-    return JSON.parse(content)
-  case 'yaml':
+    case 'json':
+      return JSON.parse(content)
+    case 'yaml':
     // eslint-disable-next-line no-case-declarations
-    const result = yaml.load(content)
-    return result || {}
-  default:
-    throw new Error(`Unsupported format for parsing: ${format}`)
+      const result = yaml.load(content)
+      return result || {}
+    default:
+      throw new Error(`Unsupported format for parsing: ${format}`)
   }
 }
 
