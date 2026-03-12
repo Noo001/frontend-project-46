@@ -16,10 +16,7 @@ const getIndent = (depth, symbol = ' ') => {
   const indentSize = 4;
 
   if (depth === 0) {
-    if (symbol === ' ') {
-      return '    ';
-    }
-    return '  ' + symbol + ' ';
+    return symbol === ' ' ? '      ' : '    ' + symbol + ' ';
   }
 
   const baseIndent = depth * indentSize;
