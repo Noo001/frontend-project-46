@@ -16,7 +16,10 @@ const getIndent = (depth, symbol = ' ') => {
   const indentSize = 4;
 
   if (depth === 0) {
-    return symbol === ' ' ? '      ' : '    ' + symbol + ' ';
+    if (symbol === ' ') {
+      return '      ';
+    }
+    return '    ' + symbol + ' ';
   }
 
   const baseIndent = depth * indentSize;
@@ -64,7 +67,7 @@ const stylish = (diff, depth = 0) => {
       if (isObject(node.value1)) {
         const nestedDiff = Object.entries(node.value1).map(([k, v]) => ({
           key: k,
-          type: 'deleted',
+          type: 'unchanged',
           value: v,
         }));
         lines.push(`${getIndent(depth, '-')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`);
@@ -75,7 +78,7 @@ const stylish = (diff, depth = 0) => {
       if (isObject(node.value2)) {
         const nestedDiff = Object.entries(node.value2).map(([k, v]) => ({
           key: k,
-          type: 'added',
+          type: 'unchanged',
           value: v,
         }));
         lines.push(`${getIndent(depth, '+')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`);
