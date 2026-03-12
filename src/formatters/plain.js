@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _ from 'lodash'
 
 /**
  * Форматирует значение для plain вывода
@@ -7,23 +7,23 @@ import _ from 'lodash';
  */
 const formatValue = (value) => {
   if (value === null) {
-    return 'null';
+    return 'null'
   }
   if (typeof value === 'string') {
-    return `'${value}'`;
+    return `'${value}'`
   }
   if (typeof value === 'object') {
-    return '[complex value]';
+    return '[complex value]'
   }
-  return String(value);
-};
+  return String(value)
+}
 
 /**
  * Собирает путь к свойству
  * @param {Array} path - Массив частей пути
  * @returns {string} Путь в формате "property.subproperty"
  */
-const buildPath = (path) => path.join('.');
+const buildPath = (path) => path.join('.')
 
 /**
  * Форматирует AST в plain стиле
@@ -33,33 +33,33 @@ const buildPath = (path) => path.join('.');
  */
 const plain = (diff, path = []) => {
   const lines = diff.flatMap((node) => {
-    const { key, type } = node;
-    const currentPath = [...path, key];
-    const propertyPath = buildPath(currentPath);
+    const { key, type } = node
+    const currentPath = [...path, key]
+    const propertyPath = buildPath(currentPath)
 
     switch (type) {
     case 'nested':
-      return plain(node.children, currentPath);
+      return plain(node.children, currentPath)
 
     case 'added':
-      return `Property '${propertyPath}' was added with value: ${formatValue(node.value)}`;
+      return `Property '${propertyPath}' was added with value: ${formatValue(node.value)}`
 
     case 'deleted':
-      return `Property '${propertyPath}' was removed`;
+      return `Property '${propertyPath}' was removed`
 
     case 'changed':
-      return `Property '${propertyPath}' was updated. From ${formatValue(node.value1)} to ${formatValue(node.value2)}`;
+      return `Property '${propertyPath}' was updated. From ${formatValue(node.value1)} to ${formatValue(node.value2)}`
 
     case 'unchanged':
-      return [];
+      return []
 
     default:
-      return [];
+      return []
     }
-  });
+  })
 
-  return lines;
-};
+  return lines
+}
 
 /**
  * Форматирует AST в plain стиле (основная функция)
@@ -67,8 +67,8 @@ const plain = (diff, path = []) => {
  * @returns {string} Отформатированная строка
  */
 const formatPlain = (diff) => {
-  const lines = plain(diff);
-  return lines.join('\n');
-};
+  const lines = plain(diff)
+  return lines.join('\n')
+}
 
-export default formatPlain;
+export default formatPlain

@@ -19,4 +19,4 @@ export default {
   },
   moduleFileExtensions: ['js', 'json'],
   verbose: true,
-};
+}

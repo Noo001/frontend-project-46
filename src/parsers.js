@@ -1,10 +1,10 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import yaml from 'js-yaml';
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import yaml from 'js-yaml'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 /**
  * Определяет формат файла по расширению
@@ -12,20 +12,20 @@ const __dirname = path.dirname(__filename);
  * @returns {string} Формат файла (json, yml, yaml)
  */
 export const getFileFormat = (filepath) => {
-  const ext = path.extname(filepath).toLowerCase().slice(1);
+  const ext = path.extname(filepath).toLowerCase().slice(1)
 
   const supportedFormats = {
     json: 'json',
     yml: 'yaml',
     yaml: 'yaml',
-  };
-
-  if (!supportedFormats[ext]) {
-    throw new Error(`Unsupported file format: .${ext}. Supported formats: .json, .yml, .yaml`);
   }
 
-  return supportedFormats[ext];
-};
+  if (!supportedFormats[ext]) {
+    throw new Error(`Unsupported file format: .${ext}. Supported formats: .json, .yml, .yaml`)
+  }
+
+  return supportedFormats[ext]
+}
 
 /**
  * Парсит содержимое файла в зависимости от формата
@@ -34,26 +34,26 @@ export const getFileFormat = (filepath) => {
  * @returns {Object} Распарсенные данные
  */
 export const parseContent = (content, format) => {
-  const supportedFormats = ['json', 'yaml'];
+  const supportedFormats = ['json', 'yaml']
   if (!supportedFormats.includes(format)) {
-    throw new Error(`Unsupported format for parsing: ${format}`);
+    throw new Error(`Unsupported format for parsing: ${format}`)
   }
 
   if (!content || content.trim() === '') {
-    return {};
+    return {}
   }
 
   switch (format) {
   case 'json':
-    return JSON.parse(content);
+    return JSON.parse(content)
   case 'yaml':
     // eslint-disable-next-line no-case-declarations
-    const result = yaml.load(content);
-    return result || {};
+    const result = yaml.load(content)
+    return result || {}
   default:
-    throw new Error(`Unsupported format for parsing: ${format}`);
+    throw new Error(`Unsupported format for parsing: ${format}`)
   }
-};
+}
 
 /**
  * Находит полный путь к файлу, проверяя несколько возможных расположений
@@ -62,26 +62,26 @@ export const parseContent = (content, format) => {
  */
 const resolveFilePath = (filepath) => {
   if (fs.existsSync(filepath)) {
-    return path.resolve(filepath);
+    return path.resolve(filepath)
   }
 
-  const cwdPath = path.resolve(process.cwd(), filepath);
+  const cwdPath = path.resolve(process.cwd(), filepath)
   if (fs.existsSync(cwdPath)) {
-    return cwdPath;
+    return cwdPath
   }
 
-  const fixturesPath = path.resolve(process.cwd(), '__fixtures__', path.basename(filepath));
+  const fixturesPath = path.resolve(process.cwd(), '__fixtures__', path.basename(filepath))
   if (fs.existsSync(fixturesPath)) {
-    return fixturesPath;
+    return fixturesPath
   }
 
-  const projectFixturesPath = path.resolve(__dirname, '..', '__fixtures__', path.basename(filepath));
+  const projectFixturesPath = path.resolve(__dirname, '..', '__fixtures__', path.basename(filepath))
   if (fs.existsSync(projectFixturesPath)) {
-    return projectFixturesPath;
+    return projectFixturesPath
   }
 
-  return filepath;
-};
+  return filepath
+}
 
 /**
  * Читает и парсит файл (JSON или YAML)
@@ -90,24 +90,24 @@ const resolveFilePath = (filepath) => {
  */
 export const readAndParseFile = (filepath) => {
   try {
-    const resolvedPath = resolveFilePath(filepath);
-    const content = fs.readFileSync(resolvedPath, 'utf-8');
-    const format = getFileFormat(filepath);
+    const resolvedPath = resolveFilePath(filepath)
+    const content = fs.readFileSync(resolvedPath, 'utf-8')
+    const format = getFileFormat(filepath)
 
-    return parseContent(content, format);
+    return parseContent(content, format)
   } catch (error) {
     if (error.code === 'ENOENT') {
-      throw new Error(`File not found: ${filepath}`);
+      throw new Error(`File not found: ${filepath}`)
     }
     if (error instanceof SyntaxError || error instanceof yaml.YAMLException) {
-      throw new Error(`Invalid ${path.extname(filepath)} format in file: ${filepath}`);
+      throw new Error(`Invalid ${path.extname(filepath)} format in file: ${filepath}`)
     }
-    throw error;
+    throw error
   }
-};
+}
 
 export default {
   readAndParseFile,
   getFileFormat,
   parseContent,
-};
+}

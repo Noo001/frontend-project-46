@@ -1,13 +1,11 @@
-import _ from 'lodash';
+import _ from 'lodash'
 
 /**
  * Проверяет, является ли значение объектом (не null и не массив)
  * @param {*} value - Проверяемое значение
  * @returns {boolean} true, если значение - объект
  */
-const isObject = (value) => {
-  return value && typeof value === 'object' && !Array.isArray(value);
-};
+const isObject = (value) => value && typeof value === 'object' && !Array.isArray(value)
 
 /**
  * Строит внутреннее представление различий между двумя объектами
@@ -17,15 +15,15 @@ const isObject = (value) => {
  */
 const buildDiff = (obj1, obj2) => {
   // Получаем все уникальные ключи
-  const allKeys = _.union(Object.keys(obj1 || {}), Object.keys(obj2 || {}));
-  const sortedKeys = _.sortBy(allKeys);
+  const allKeys = _.union(Object.keys(obj1 || {}), Object.keys(obj2 || {}))
+  const sortedKeys = _.sortBy(allKeys)
 
   return sortedKeys.map((key) => {
-    const value1 = obj1?.[key];
-    const value2 = obj2?.[key];
+    const value1 = obj1?.[key]
+    const value2 = obj2?.[key]
 
-    const hasInFirst = Object.hasOwn(obj1 || {}, key);
-    const hasInSecond = Object.hasOwn(obj2 || {}, key);
+    const hasInFirst = Object.hasOwn(obj1 || {}, key)
+    const hasInSecond = Object.hasOwn(obj2 || {}, key)
 
     // Если ключ есть в обоих объектах и оба значения - объекты (но не массивы)
     if (hasInFirst && hasInSecond && isObject(value1) && isObject(value2)) {
@@ -33,7 +31,7 @@ const buildDiff = (obj1, obj2) => {
         key,
         type: 'nested',
         children: buildDiff(value1, value2),
-      };
+      }
     }
 
     // Если ключ есть в обоих объектах
@@ -43,14 +41,14 @@ const buildDiff = (obj1, obj2) => {
           key,
           type: 'unchanged',
           value: value1,
-        };
+        }
       }
       return {
         key,
         type: 'changed',
         value1,
         value2,
-      };
+      }
     }
 
     // Если ключ только в первом объекте
@@ -59,7 +57,7 @@ const buildDiff = (obj1, obj2) => {
         key,
         type: 'deleted',
         value: value1,
-      };
+      }
     }
 
     // Если ключ только во втором объекте
@@ -68,11 +66,11 @@ const buildDiff = (obj1, obj2) => {
         key,
         type: 'added',
         value: value2,
-      };
+      }
     }
 
-    return null;
-  }).filter(Boolean);
-};
+    return null
+  }).filter(Boolean)
+}
 
-export default buildDiff;
+export default buildDiff
