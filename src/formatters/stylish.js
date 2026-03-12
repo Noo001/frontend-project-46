@@ -51,7 +51,7 @@ const stylish = (diff, depth = 0) => {
         const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
           key: k,
           type: 'added',
-          value: v
+          value: v,
         }));
         return `${getIndent(depth, '+')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`;
       }
@@ -63,7 +63,7 @@ const stylish = (diff, depth = 0) => {
         const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
           key: k,
           type: 'deleted',
-          value: v
+          value: v,
         }));
         return `${getIndent(depth, '-')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`;
       }
@@ -78,7 +78,7 @@ const stylish = (diff, depth = 0) => {
         const nestedDiff = Object.entries(node.value1).map(([k, v]) => ({
           key: k,
           type: 'deleted',
-          value: v
+          value: v,
         }));
         lines.push(`${getIndent(depth, '-')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`);
       } else {
@@ -90,7 +90,7 @@ const stylish = (diff, depth = 0) => {
         const nestedDiff = Object.entries(node.value2).map(([k, v]) => ({
           key: k,
           type: 'added',
-          value: v
+          value: v,
         }));
         lines.push(`${getIndent(depth, '+')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`);
       } else {
@@ -105,7 +105,7 @@ const stylish = (diff, depth = 0) => {
         const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
           key: k,
           type: 'unchanged',
-          value: v
+          value: v,
         }));
         return `${getIndent(depth, ' ')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`;
       }
