@@ -1,7 +1,7 @@
+import genDiff from './src/index.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
-import genDiff from './src/index.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -10,12 +10,10 @@ const getFixturePath = (filename) => path.join(__dirname, '__fixtures__', filena
 
 console.log('=== ПРОВЕРКА СОДЕРЖИМОГО ФАЙЛОВ ===')
 
-// Проверяем содержимое file1.json
 const file1Path = getFixturePath('file1.json')
 console.log('\nfile1.json:')
 console.log(fs.readFileSync(file1Path, 'utf8'))
 
-// Проверяем содержимое file2.json
 const file2Path = getFixturePath('file2.json')
 console.log('\nfile2.json:')
 console.log(fs.readFileSync(file2Path, 'utf8'))
@@ -30,7 +28,6 @@ console.log(JSON.stringify(result))
 console.log('\n=== ПЕРВЫЕ 20 СИМВОЛОВ ===')
 console.log('Первые 20 символов:', JSON.stringify(result.substring(0, 20)))
 
-// Проверяем конкретные строки
 const lines = result.split('\n')
 console.log('\n=== РАЗБОР ПО СТРОКАМ ===')
 lines.forEach((line, index) => {

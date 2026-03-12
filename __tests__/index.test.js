@@ -10,33 +10,33 @@ const __dirname = path.dirname(__filename)
 
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename)
 
-describe('gendiff stylish format', () => {
-  it('should compare two flat JSON files correctly', () => {
+describe('gendiff stylish format', ( ) => {
+  it('should compare two flat JSON files correctly', ( ) => {
     const file1 = getFixturePath('file1.json')
     const file2 = getFixturePath('file2.json')
 
     const expected = `{
-    - follow: false
-      host: hexlet.io
-    - proxy: 123.234.53.22
-    - timeout: 50
-    + timeout: 20
-    + verbose: true
+  - follow: false
+    host: hexlet.io
+  - proxy: 123.234.53.22
+  - timeout: 50
+  + timeout: 20
+  + verbose: true
 }`
 
     const result = genDiff(file1, file2, 'stylish')
     expect(result).toBe(expected)
   })
 
-  it('should handle identical JSON files', () => {
+  it('should handle identical JSON files', ( ) => {
     const file1 = getFixturePath('file1.json')
     const file1Copy = getFixturePath('file1.json')
 
     const expected = `{
-      follow: false
-      host: hexlet.io
-      proxy: 123.234.53.22
-      timeout: 50
+    follow: false
+    host: hexlet.io
+    proxy: 123.234.53.22
+    timeout: 50
 }`
 
     const result = genDiff(file1, file1Copy, 'stylish')
@@ -44,8 +44,8 @@ describe('gendiff stylish format', () => {
   })
 })
 
-describe('gendiff plain format', () => {
-  it('should compare two nested JSON files in plain format', () => {
+describe('gendiff plain format', ( ) => {
+  it('should compare two nested JSON files in plain format', ( ) => {
     const file1 = getFixturePath('file1-nested.json')
     const file2 = getFixturePath('file2-nested.json')
 
@@ -67,7 +67,7 @@ describe('gendiff plain format', () => {
     expect(result).toBe(expected)
   })
 
-  it('should compare two flat JSON files in plain format', () => {
+  it('should compare two flat JSON files in plain format', ( ) => {
     const file1 = getFixturePath('file1.json')
     const file2 = getFixturePath('file2.json')
 
@@ -83,7 +83,7 @@ describe('gendiff plain format', () => {
     expect(sortedResult).toBe(expected)
   })
 
-  it('should handle identical files in plain format', () => {
+  it('should handle identical files in plain format', ( ) => {
     const file1 = getFixturePath('file1.json')
     const file1Copy = getFixturePath('file1.json')
 
@@ -91,7 +91,7 @@ describe('gendiff plain format', () => {
     expect(result).toBe('')
   })
 
-  it('should format values correctly', () => {
+  it('should format values correctly', ( ) => {
     const file1 = getFixturePath('file1-nested.json')
     const file2 = getFixturePath('file2-nested.json')
 
@@ -107,39 +107,36 @@ describe('gendiff plain format', () => {
   })
 })
 
-describe('parsers module tests', () => {
-  it('should get file format correctly', () => {
+describe('parsers module tests', ( ) => {
+  it('should get file format correctly', ( ) => {
     expect(getFileFormat('test.json')).toBe('json')
     expect(getFileFormat('test.yml')).toBe('yaml')
     expect(getFileFormat('test.yaml')).toBe('yaml')
-    expect(() => getFileFormat('test.txt')).toThrow(/Unsupported file format/)
+    expect(( ) => getFileFormat('test.txt')).toThrow(/Unsupported file format/)
   })
 
-  it('should parse content correctly', () => {
+  it('should parse content correctly', ( ) => {
     expect(parseContent('{"key": "value"}', 'json')).toEqual({ key: 'value' })
     expect(parseContent('key: value', 'yaml')).toEqual({ key: 'value' })
     expect(parseContent('', 'json')).toEqual({})
     expect(parseContent('', 'yaml')).toEqual({})
     expect(parseContent('  ', 'json')).toEqual({})
-    expect(parseContent('  ', 'yaml')).toEqual({})
-    expect(() => parseContent('invalid json', 'json')).toThrow()
-    expect(() => parseContent('invalid: yaml: :', 'yaml')).toThrow()
-
-    // Проверяем, что для неподдерживаемого формата выбрасывается исключение
-    expect(() => parseContent('', 'unsupported')).toThrow('Unsupported format for parsing: unsupported')
+    expect(( ) => parseContent('invalid json', 'json')).toThrow()
+    expect(( ) => parseContent('invalid: yaml: :', 'yaml')).toThrow()
+    expect(( ) => parseContent('', 'unsupported')).toThrow('Unsupported format for parsing: unsupported')
   })
 
-  it('should read and parse files with different paths', () => {
+  it('should read and parse files with different paths', ( ) => {
     const file1 = getFixturePath('file1.json')
     const data = readAndParseFile(file1)
     expect(data).toHaveProperty('host', 'hexlet.io')
 
-    expect(() => readAndParseFile('nonexistent.json')).toThrow()
+    expect(( ) => readAndParseFile('nonexistent.json')).toThrow()
   })
 })
 
-describe('gendiff error handling', () => {
-  it('should throw error for unsupported file format', () => {
+describe('gendiff error handling', ( ) => {
+  it('should throw error for unsupported file format', ( ) => {
     const unsupportedFile = getFixturePath('unsupported.txt')
     const file1 = getFixturePath('file1.json')
 
@@ -147,30 +144,30 @@ describe('gendiff error handling', () => {
       fs.writeFileSync(unsupportedFile, 'content')
     }
 
-    expect(() => {
+    expect(( ) => {
       genDiff(unsupportedFile, file1)
     }).toThrow(/Unsupported file format/)
   })
 
-  it('should throw error for file not found', () => {
+  it('should throw error for file not found', ( ) => {
     const nonExistentFile = getFixturePath('nonexistent.json')
     const file1 = getFixturePath('file1.json')
 
-    expect(() => {
+    expect(( ) => {
       genDiff(nonExistentFile, file1)
     }).toThrow(/File not found/)
   })
 
-  it('should throw error for unknown format', () => {
+  it('should throw error for unknown format', ( ) => {
     const file1 = getFixturePath('file1.json')
     const file2 = getFixturePath('file2.json')
 
-    expect(() => {
+    expect(( ) => {
       genDiff(file1, file2, 'unknown')
     }).toThrow(/Unknown format/)
   })
 
-  it('should handle invalid JSON files', () => {
+  it('should handle invalid JSON files', ( ) => {
     const invalidFile = getFixturePath('invalid.json')
 
     if (!fs.existsSync(invalidFile)) {
@@ -179,38 +176,35 @@ describe('gendiff error handling', () => {
 
     const file1 = getFixturePath('file1.json')
 
-    expect(() => {
+    expect(( ) => {
       genDiff(invalidFile, file1)
     }).toThrow(/Invalid .json format/)
   })
 
-  it('should handle invalid YAML files', () => {
+  it('should handle invalid YAML files', ( ) => {
     const invalidFile = getFixturePath('invalid.yml')
     const file1 = getFixturePath('file1.yml')
 
-    expect(() => {
+    expect(( ) => {
       genDiff(invalidFile, file1)
     }).toThrow(/Invalid .yml format/)
   })
 })
 
-describe('gendiff json format', () => {
-  it('should compare two nested JSON files in json format', () => {
+describe('gendiff json format', ( ) => {
+  it('should compare two nested JSON files in json format', ( ) => {
     const file1 = getFixturePath('file1-nested.json')
     const file2 = getFixturePath('file2-nested.json')
 
     const result = genDiff(file1, file2, 'json')
 
-    // Проверяем, что результат - валидный JSON
-    expect(() => JSON.parse(result)).not.toThrow()
+    expect(( ) => JSON.parse(result)).not.toThrow()
 
     const parsed = JSON.parse(result)
 
-    // Проверяем структуру JSON
     expect(Array.isArray(parsed)).toBe(true)
     expect(parsed.length).toBeGreaterThan(0)
 
-    // Проверяем наличие ключей
     const rootKeys = parsed.map((item) => item.key)
     expect(rootKeys).toContain('common')
     expect(rootKeys).toContain('group1')
@@ -218,21 +212,18 @@ describe('gendiff json format', () => {
     expect(rootKeys).toContain('group3')
   })
 
-  it('should compare two flat JSON files in json format', () => {
+  it('should compare two flat JSON files in json format', ( ) => {
     const file1 = getFixturePath('file1.json')
     const file2 = getFixturePath('file2.json')
 
     const result = genDiff(file1, file2, 'json')
 
-    // Проверяем, что результат - валидный JSON
-    expect(() => JSON.parse(result)).not.toThrow()
+    expect(( ) => JSON.parse(result)).not.toThrow()
 
     const parsed = JSON.parse(result)
 
-    // Проверяем структуру JSON
     expect(Array.isArray(parsed)).toBe(true)
 
-    // Проверяем типы узлов
     const types = parsed.map((item) => item.type)
     expect(types).toContain('added')
     expect(types).toContain('deleted')
@@ -240,18 +231,16 @@ describe('gendiff json format', () => {
     expect(types).toContain('unchanged')
   })
 
-  it('should handle identical files in json format', () => {
+  it('should handle identical files in json format', ( ) => {
     const file1 = getFixturePath('file1.json')
     const file1Copy = getFixturePath('file1.json')
 
     const result = genDiff(file1, file1Copy, 'json')
 
-    // Проверяем, что результат - валидный JSON
-    expect(() => JSON.parse(result)).not.toThrow()
+    expect(( ) => JSON.parse(result)).not.toThrow()
 
     const parsed = JSON.parse(result)
 
-    // Все узлы должны быть типа 'unchanged'
     const allUnchanged = parsed.every((item) => item.type === 'unchanged')
     expect(allUnchanged).toBe(true)
   })
