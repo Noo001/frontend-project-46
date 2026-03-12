@@ -8,24 +8,18 @@ const formatValue = (value) => {
   return JSON.stringify(value);
 };
 
-/**
- * Проверяет, является ли значение объектом (не null и не массив)
- */
 const isObject = (value) => {
   return value && typeof value === 'object' && !Array.isArray(value);
 };
 
-/**
- * Генерирует отступ для текущей глубины
- */
 const getIndent = (depth, symbol = ' ') => {
   const indentSize = 4;
 
   if (depth === 0) {
     if (symbol === ' ') {
-      return '    '; // 4 пробела для обычных ключей
+      return '    ';
     }
-    return '  ' + symbol + ' '; // 2 пробела + символ + пробел
+    return '  ' + symbol + ' ';
   }
 
   const baseIndent = depth * indentSize;
@@ -35,9 +29,6 @@ const getIndent = (depth, symbol = ' ') => {
   return ' '.repeat(baseIndent + 2) + symbol + ' ';
 };
 
-/**
- * Форматирует AST в стиле stylish
- */
 const stylish = (diff, depth = 0) => {
   const lines = diff.map((node) => {
     const { key, type } = node;
@@ -73,7 +64,6 @@ const stylish = (diff, depth = 0) => {
     case 'changed': {
       const lines = [];
 
-      // Старое значение
       if (isObject(node.value1)) {
         const nestedDiff = Object.entries(node.value1).map(([k, v]) => ({
           key: k,
@@ -85,7 +75,6 @@ const stylish = (diff, depth = 0) => {
         lines.push(`${getIndent(depth, '-')}${key}: ${formatValue(node.value1)}`);
       }
 
-      // Новое значение
       if (isObject(node.value2)) {
         const nestedDiff = Object.entries(node.value2).map(([k, v]) => ({
           key: k,
