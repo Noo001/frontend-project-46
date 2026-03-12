@@ -41,7 +41,7 @@ const stylish = (diff, depth = 0) => {
       if (isObject(node.value)) {
         const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
           key: k,
-          type: 'added',
+          type: 'unchanged',  // ← важно: unchanged, а не added
           value: v,
         }));
         return `${getIndent(depth, '+')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`;
@@ -53,7 +53,7 @@ const stylish = (diff, depth = 0) => {
       if (isObject(node.value)) {
         const nestedDiff = Object.entries(node.value).map(([k, v]) => ({
           key: k,
-          type: 'deleted',
+          type: 'unchanged',  // ← важно: unchanged, а не deleted
           value: v,
         }));
         return `${getIndent(depth, '-')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`;
