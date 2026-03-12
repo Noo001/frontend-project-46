@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 const formatValue = (value) => {
   if (value === null) return 'null'
   if (typeof value === 'string') return value

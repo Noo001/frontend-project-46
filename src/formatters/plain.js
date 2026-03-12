@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 /**
  * Форматирует значение для plain вывода
  * @param {*} value - Значение для форматирования
@@ -32,7 +30,7 @@ const buildPath = (path) => path.join('.')
  * @returns {Array} Массив строк с описанием изменений
  */
 const plain = (diff, path = []) => {
-  const lines = diff.flatMap((node) => {
+  return diff.flatMap((node) => {
     const { key, type } = node
     const currentPath = [...path, key]
     const propertyPath = buildPath(currentPath)
@@ -57,8 +55,6 @@ const plain = (diff, path = []) => {
         return []
     }
   })
-
-  return lines
 }
 
 /**
