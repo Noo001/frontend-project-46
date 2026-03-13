@@ -39,7 +39,7 @@ module.exports = {
     'array-bracket-spacing': ['error', 'never'],
     'no-unused-vars': ['error', {
       argsIgnorePattern: '^_',
-      varsIgnorePattern: '^_'
+      varsIgnorePattern: '^_',
     }],
     'no-console': 'off',
     'no-var': 'error',
