@@ -11,10 +11,12 @@ const formatValue = (value) => {
   return String(value)
 }
 
-const buildPath = (path) => path.join('.')
+const buildPath = (path) => {
+  return path.join('.')
+}
 
 const plain = (diff, path = []) => {
-  const lines = diff.flatMap((node) => {
+  return diff.flatMap((node) => {
     const { key, type } = node
     const currentPath = [...path, key]
     const propertyPath = buildPath(currentPath)
@@ -34,8 +36,6 @@ const plain = (diff, path = []) => {
         return []
     }
   })
-
-  return lines
 }
 
 const formatPlain = (diff) => {

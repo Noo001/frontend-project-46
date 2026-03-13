@@ -74,8 +74,8 @@ export const readAndParseFile = (filepath) => {
     const format = getFileFormat(filepath)
 
     return parseContent(content, format)
-  } catch (error)
-  {
+  }
+  catch (error) {
     if (error.code === 'ENOENT') {
       throw new Error(`File not found: ${filepath}`)
     }
