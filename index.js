@@ -26,12 +26,15 @@ const buildDiffString = (data1, data2) => {
 
     if (hasInFirst && !hasInSecond) {
       lines.push(`  - ${key}: ${formatValue(data1[key])}`)
-    } else if (!hasInFirst && hasInSecond) {
+    }
+    else if (!hasInFirst && hasInSecond) {
       lines.push(`  + ${key}: ${formatValue(data2[key])}`)
-    } else if (hasInFirst && hasInSecond) {
+    }
+    else if (hasInFirst && hasInSecond) {
       if (data1[key] === data2[key]) {
         lines.push(`    ${key}: ${formatValue(data1[key])}`)
-      } else {
+      } else
+      {
         lines.push(`  - ${key}: ${formatValue(data1[key])}`)
         lines.push(`  + ${key}: ${formatValue(data2[key])}`)
       }
@@ -47,7 +50,8 @@ export default function genDiff(filepath1, filepath2) {
     const data1 = readAndParseFile(filepath1)
     const data2 = readAndParseFile(filepath2)
     return buildDiffString(data1, data2)
-  } catch (error) {
+  } catch (error)
+  {
     throw new Error(`Failed to process files: ${error.message}`)
   }
 }

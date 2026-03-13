@@ -11,7 +11,8 @@ export default function genDiff(filepath1, filepath2, formatName = 'stylish') {
     const formatter = getFormatter(formatName)
 
     return formatter(diff)
-  } catch (error) {
+  } catch (error)
+  {
     throw new Error(`Failed to process files: ${error.message}`)
   }
 }

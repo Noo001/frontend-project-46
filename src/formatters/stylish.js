@@ -64,7 +64,8 @@ const stylish = (diff, depth = 0) => {
             value: v,
           }))
           changedLines.push(`${getIndent(depth, '-')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`)
-        } else {
+        } else
+        {
           changedLines.push(`${getIndent(depth, '-')}${key}: ${formatValue(node.value1)}`)
         }
 
@@ -75,7 +76,8 @@ const stylish = (diff, depth = 0) => {
             value: v,
           }))
           changedLines.push(`${getIndent(depth, '+')}${key}: {\n${stylish(nestedDiff, depth + 1)}\n${getIndent(depth, ' ')}}`)
-        } else {
+        } else
+        {
           changedLines.push(`${getIndent(depth, '+')}${key}: ${formatValue(node.value2)}`)
         }
 

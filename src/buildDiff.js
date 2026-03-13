@@ -1,6 +1,8 @@
 import _ from 'lodash'
 
-const isObject = (value) => value && typeof value === 'object' && !Array.isArray(value)
+const isObject = (value) => {
+  return value && typeof value === 'object' && !Array.isArray(value)
+}
 
 const buildDiff = (obj1, obj2) => {
   const allKeys = _.union(Object.keys(obj1 || {}), Object.keys(obj2 || {}))
