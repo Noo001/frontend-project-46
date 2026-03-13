@@ -26,11 +26,11 @@ const buildDiffString = (data1, data2) => {
 
     if (hasInFirst && !hasInSecond) {
       lines.push(`  - ${key}: ${formatValue(data1[key])}`)
-    }
-    else if (!hasInFirst && hasInSecond) {
+    } else if (!hasInFirst && hasInSecond)
+    {
       lines.push(`  + ${key}: ${formatValue(data2[key])}`)
-    }
-    else if (hasInFirst && hasInSecond) {
+    } else if (hasInFirst && hasInSecond)
+    {
       if (data1[key] === data2[key]) {
         lines.push(`    ${key}: ${formatValue(data1[key])}`)
       } else
