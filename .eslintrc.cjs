@@ -9,7 +9,7 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: ['import', '@stylistic'],
+  plugins: ['import'],
   settings: {
     'import/resolver': {
       node: {
@@ -39,16 +39,16 @@ module.exports = {
     'array-bracket-spacing': ['error', 'never'],
     'no-unused-vars': ['error', {
       argsIgnorePattern: '^_',
-      varsIgnorePattern: '^_',
+      varsIgnorePattern: '^_'
     }],
     'no-console': 'off',
     'no-var': 'error',
     'prefer-const': 'error',
     'eqeqeq': ['error', 'always'],
 
-    '@stylistic/arrow-parens': ['error', 'always'],
-    '@stylistic/brace-style': ['error', '1tbs'],
-    '@stylistic/space-in-parens': ['error', 'never'],
-    '@stylistic/eol-last': ['error', 'always'],
+    'arrow-parens': 'off',
+    'brace-style': 'off',
+    'space-in-parens': 'off',
+    'padded-blocks': 'off',
   },
 }

@@ -46,9 +46,7 @@ export default function genDiff(filepath1, filepath2) {
   try {
     const data1 = readAndParseFile(filepath1)
     const data2 = readAndParseFile(filepath2)
-
     return buildDiffString(data1, data2)
-
   } catch (error) {
     throw new Error(`Failed to process files: ${error.message}`)
   }
