@@ -8,7 +8,9 @@ import { readAndParseFile, getFileFormat, parseContent } from '../src/parsers.js
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename)
+const getFixturePath = (filename) => {
+  return path.join(__dirname, '..', '__fixtures__', filename)
+}
 
 describe('gendiff stylish format', () => {
   it('should compare two flat JSON files correctly', () => {
@@ -205,7 +207,9 @@ describe('gendiff json format', () => {
     expect(Array.isArray(parsed)).toBe(true)
     expect(parsed.length).toBeGreaterThan(0)
 
-    const rootKeys = parsed.map((item) => item.key)
+    const rootKeys = parsed.map((item) => {
+      return item.key
+    })
     expect(rootKeys).toContain('common')
     expect(rootKeys).toContain('group1')
     expect(rootKeys).toContain('group2')
@@ -224,7 +228,9 @@ describe('gendiff json format', () => {
 
     expect(Array.isArray(parsed)).toBe(true)
 
-    const types = parsed.map((item) => item.type)
+    const types = parsed.map((item) => {
+      return item.type
+    })
     expect(types).toContain('added')
     expect(types).toContain('deleted')
     expect(types).toContain('changed')
@@ -241,7 +247,9 @@ describe('gendiff json format', () => {
 
     const parsed = JSON.parse(result)
 
-    const allUnchanged = parsed.every((item) => item.type === 'unchanged')
+    const allUnchanged = parsed.every((item) => {
+      return item.type === 'unchanged'
+    })
     expect(allUnchanged).toBe(true)
   })
 })

@@ -11,7 +11,9 @@ import { readAndParseFile } from '../src/parsers.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename)
+const getFixturePath = (filename) => {
+  return path.join(__dirname, '..', '__fixtures__', filename)
+}
 
 describe('Coverage tests for stylish.js', () => {
   it('should format different value types correctly', () => {
@@ -145,7 +147,9 @@ describe('Coverage tests for buildDiff.js', () => {
 
     const diff = buildDiff(obj1, obj2)
 
-    const changedNode = diff.find((node) => node.key === 'key' && node.type === 'changed')
+    const changedNode = diff.find((node) => {
+      return node.key === 'key' && node.type === 'changed'
+    })
     expect(changedNode).toBeDefined()
     expect(changedNode.value1).toBeNull()
     expect(changedNode.value2).toBeUndefined()
@@ -157,7 +161,9 @@ describe('Coverage tests for buildDiff.js', () => {
 
     const diff = buildDiff(obj1, obj2)
 
-    const changedNode = diff.find((node) => node.key === 'key' && node.type === 'changed')
+    const changedNode = diff.find((node) => {
+      return node.key === 'key' && node.type === 'changed'
+    })
     expect(changedNode).toBeDefined()
     expect(changedNode.value1).toBe('string')
     expect(changedNode.value2).toBe(42)
