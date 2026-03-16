@@ -1,10 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import yaml from 'js-yaml'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+import resolveFilePath from './fileResolver.js'
 
 export const getFileFormat = (filepath) => {
   const ext = path.extname(filepath).toLowerCase().slice(1)
@@ -42,29 +39,6 @@ export const parseContent = (content, format) => {
     default:
       throw new Error(`Unsupported format for parsing: ${format}`)
   }
-}
-
-const resolveFilePath = (filepath) => {
-  if (fs.existsSync(filepath)) {
-    return path.resolve(filepath)
-  }
-
-  const cwdPath = path.resolve(process.cwd(), filepath)
-  if (fs.existsSync(cwdPath)) {
-    return cwdPath
-  }
-
-  const fixturesPath = path.resolve(process.cwd(), '__fixtures__', path.basename(filepath))
-  if (fs.existsSync(fixturesPath)) {
-    return fixturesPath
-  }
-
-  const projectFixturesPath = path.resolve(__dirname, '..', '__fixtures__', path.basename(filepath))
-  if (fs.existsSync(projectFixturesPath)) {
-    return projectFixturesPath
-  }
-
-  return filepath
 }
 
 export const readAndParseFile = (filepath) => {
